@@ -25,11 +25,12 @@ class ConnectionObject:
     socket: _socket = field(default=None)
     address: tuple[str, int] = field(default=("", -1))
     
+    type: ConnectionType = field(default=ConnectionType.UNKNOWN)
+    
     server_crypto: ECDHObject | None = field(default=None)
     client_crypto: ECDHObject | None = field(default=None)
     
     state: ConnectionState = field(default=ConnectionState.GREETING)
-    type: ConnectionType = field(default=ConnectionType.UNKNOWN)
     
     def __post_init__(self):
         match type(self.type):

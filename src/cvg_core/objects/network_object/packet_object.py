@@ -10,10 +10,13 @@ class PacketType(Enum):
     
     PASSWORD = b"\x02"
     
+    GRANTED = b"\xa0"
+    DENIED = b"\xa1"
+    
     COMMAND = b"\xc0"
     CRYPTO = b"\xc1"
     
-    RESULT = b"\xc2"
+    RESPONSE = b"\xc2"
     
     STREAM_START = b"\xb0"
     STREAM_DATA = b"\xb1"
