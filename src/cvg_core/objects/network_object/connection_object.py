@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from socket import socket as _socket
 
 
-from objects.crypto_object.ecdh_object import ECDHObject
+from cvg_core.objects.crypto_object.ecdh_object import ECDHObject
 
 
 class ConnectionState(Enum):
