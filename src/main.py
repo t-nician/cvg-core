@@ -3,17 +3,32 @@ from socket import socket, AF_INET, SOCK_STREAM
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
 from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
 
-from cvg_core.objects.crypto_object.ecdh_object import ECDHObject
-
 from cvg_core.procedures.send_and_receive import send_and_receive, send, receive
 
 
 def client_test():
-    pass
+    connection = ConnectionObject(
+        address=("127.0.0.1", 5000),
+        socket=socket(AF_INET, SOCK_STREAM),
+        type=ConnectionType.CLIENT_TO_SERVER
+    )
+    
+    connection.socket.connect(connection.address)
+    
+    send(connection, PacketObject(b"Hello from client!", PacketType.GATEWAY))
 
 
 def server_test():
-    pass
+    server_socket = socket(AF_INET, SOCK_STREAM)
+    server_socket.bind(("127.0.0.1", 5000))
+    server_socket.listen(1)
+    
+    connection = ConnectionObject(server_socket.accept())
+    packet = receive(connection)
+    
+    print(f"[server received] {connection.address}:", packet)
+    
+    #send(connection, PacketObject(b"Hello!", PacketType.GRANTED, packet.id))
 
 
 """alice_keys = ECDHObject()
