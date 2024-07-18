@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+dependencies = [
+  "pycryptodome",
+  "cryptography"
+]
+
+name = "cvg-core"
+version = "0.0.1"
+authors = [
+  { name="t-nician" },
+]
+description = "A network protocol dependancy. Objects & Procedures."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    #"Programming Language :: Python :: 3",
+    #"License :: OSI Approved :: MIT License",
+    #"Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/t-nician/cvg-core"
+Issues = "https://github.com/t-nician/cvg-core/issues"
