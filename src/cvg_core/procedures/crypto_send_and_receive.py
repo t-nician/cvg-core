@@ -92,6 +92,8 @@ def crypto_exchange(connection: ConnectionObject):
         # TODO confirm crypto exchange. we just assume it's a success rn.
         crypto_receive(connection)
         
+        connection.encryption_enabled = True
+        
 
 def crypto_send(connection: ConnectionObject, packet: PacketObject):
     send(connection, encrypt_packet(connection, packet))
@@ -102,11 +104,10 @@ def crypto_receive(
     id: None | bytes = None
 ) -> PacketObject | None:
     packet = receive(connection, id=id)
-
-    if packet.type is PacketType.CRYPTO:
-        return decrypt_packet(connection, packet)
-    else:
-        return packet
+    
+    assert packet.type is PacketType.CRYPTO
+    
+    return decrypt_packet(connection, packet)
         
 
 def crypto_send_and_receive(

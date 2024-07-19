@@ -59,7 +59,7 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
     chunk_list = [
         raw_packet[index : index + 4094] for index in range(
             0, 
-            chunk_count,
+            chunk_count * 4094,
             4094
         ) 
     ]

@@ -9,8 +9,14 @@ from cvg_core.objects.network_object.packet_object import PacketType, PacketObje
 from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
 
 from cvg_core.procedures.send_and_receive import send_and_receive, send, receive, stream_receive
-
 from cvg_core.procedures.crypto_send_and_receive import crypto_exchange, crypto_send_and_receive, crypto_send, crypto_receive
+
+from cvg_core.procedures.establish_connection import establish_connection
+
+ENCRYPTION_ENABLED = False
+
+big_password = b"cigarettes"*5000
+print("password size", len(big_password))
 
 def client_test():    
     sleep(1)
@@ -18,27 +24,19 @@ def client_test():
     connection = ConnectionObject(
         address=("127.0.0.1", 5000),
         socket=socket(AF_INET, SOCK_STREAM),
-        type=ConnectionType.CLIENT_TO_SERVER
+        type=ConnectionType.CLIENT_TO_SERVER,
+        encryption_enabled=ENCRYPTION_ENABLED
     )
     
     connection.socket.connect(connection.address)
     
-    send(connection, PacketObject(b"a"*5000, PacketType.COMMAND))
+    establish_connection(connection, big_password)
     
-    #crypto_exchange(connection)
+    sleep(0.1)
     
-    #response = crypto_send_and_receive(
-    #    connection,
-    #    PacketObject(
-    #        b"hello",
-    #        PacketType.GATEWAY
-    #    )
-    #)
-    
-    #sleep(0.1)
-    
-    #print("[client-receive]", response)
-    
+    print("[client] server established?", connection.established)
+
+
 
 def server_test():
     server_socket = socket(AF_INET, SOCK_STREAM)
@@ -47,24 +45,15 @@ def server_test():
     
     connection = ConnectionObject(
         *server_socket.accept(), 
-        type=ConnectionType.SERVER_TO_CLIENT
+        type=ConnectionType.SERVER_TO_CLIENT,
+        encryption_enabled=ENCRYPTION_ENABLED
     ) 
     
-    print(receive(connection).get_size())
+    establish_connection(connection, big_password)
     
-    #crypto_exchange(connection)
-    
-    #packet = crypto_receive(connection)
-    
-    #crypto_send(
-    #    connection, 
-    #    PacketObject(
-    #        b"hello",
-    #        PacketType.GATEWAY
-    #    )
-    #)
-    
-    #print("[server-receive]", packet)
+    print("[server] client established?", connection.established)
+
+
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "client":

@@ -27,16 +27,20 @@ class ConnectionObject:
     
     type: ConnectionType = field(default=ConnectionType.UNKNOWN)
     
+    encryption_enabled: bool = field(default=True)
+    
     server_crypto: ECDHObject | None = field(default=None)
     client_crypto: ECDHObject | None = field(default=None)
     
     state: ConnectionState = field(default=ConnectionState.GREETING)
+    established: bool = field(default=False)
     
     def __post_init__(self):
-        match self.type:
-            case ConnectionType.CLIENT_TO_SERVER:
-                self.client_crypto = ECDHObject()
-            case ConnectionType.SERVER_TO_CLIENT:
-                self.server_crypto = ECDHObject()
-            case _:
-                pass
+        if self.encryption_enabled:
+            match self.type:
+                case ConnectionType.CLIENT_TO_SERVER:
+                    self.client_crypto = ECDHObject()
+                case ConnectionType.SERVER_TO_CLIENT:
+                    self.server_crypto = ECDHObject()
+                case _:
+                    pass
