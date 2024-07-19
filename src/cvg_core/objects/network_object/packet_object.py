@@ -45,6 +45,8 @@ class PacketObject:
             
             self.payload = self.payload[2::]
             self.size = self.get_size()
+        elif self.id is None:
+            self.id = b"\x00"
 
     def to_bytes(self) -> bytes:
         encoded_packet = self.id + self.type.value + self.payload

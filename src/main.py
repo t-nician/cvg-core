@@ -15,8 +15,7 @@ from cvg_core.procedures.establish_connection import establish_connection
 
 ENCRYPTION_ENABLED = False
 
-big_password = b"cigarettes"*5000
-print("password size", len(big_password))
+big_password = b"cigarettes"*500
 
 def client_test():    
     sleep(1)
