@@ -6,7 +6,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
 from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
 
-from cvg_core.procedures.send_and_receive import send_and_receive, send, receive
+from cvg_core.procedures.send_and_receive import send_and_receive, send, receive, stream_receive
 
 
 def client_test():    
@@ -20,14 +20,14 @@ def client_test():
     
     connection.socket.connect(connection.address)
     
-    send(
+    result = send_and_receive(
         connection, 
-        PacketObject(b"Hello from client!", PacketType.GATEWAY, id=b"a")
+        PacketObject(b"a"*5000, PacketType.GATEWAY, id=b"a")
     )
     
     sleep(0.1)
     
-    print("[client received]", receive(connection, id=b"a"))
+    print("[client received]", result)
 
 
 def server_test():
@@ -38,7 +38,7 @@ def server_test():
     connection = ConnectionObject(*server_socket.accept())
     packet = receive(connection)
     
-    print(f"[server received] {connection.address}:", packet)
+    print(f"[server received] {connection.address}:", packet.get_size())
     
     send(connection, PacketObject(b"Hello!", PacketType.GRANTED, packet.id))
 

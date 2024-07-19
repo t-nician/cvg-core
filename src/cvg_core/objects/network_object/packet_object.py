@@ -54,15 +54,21 @@ class PacketObject:
         return encoded_packet
     
     def get_size(self) -> int:
-        if self.size == -1:
+        if self.size <= 2:
             self.to_bytes()
             
         return self.size
 
     def set_payload(self, data: bytes):
         self.payload = data
+        self.to_bytes()
     
     def add_payload(self, data: bytes):
         self.payload += data
+        self.to_bytes()
+        
+    def clear_payload(self):
+        self.payload = b""
+        self.size = 2
         
     
