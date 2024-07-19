@@ -23,19 +23,21 @@ def client_test():
     
     connection.socket.connect(connection.address)
     
-    crypto_exchange(connection)
+    send(connection, PacketObject(b"a"*5000, PacketType.COMMAND))
     
-    response = crypto_send_and_receive(
-        connection,
-        PacketObject(
-            b"hello",
-            PacketType.GATEWAY
-        )
-    )
+    #crypto_exchange(connection)
     
-    sleep(0.1)
+    #response = crypto_send_and_receive(
+    #    connection,
+    #    PacketObject(
+    #        b"hello",
+    #        PacketType.GATEWAY
+    #    )
+    #)
     
-    print("[client-receive]", response)
+    #sleep(0.1)
+    
+    #print("[client-receive]", response)
     
 
 def server_test():
@@ -48,19 +50,21 @@ def server_test():
         type=ConnectionType.SERVER_TO_CLIENT
     ) 
     
-    crypto_exchange(connection)
+    print(receive(connection).get_size())
     
-    packet = crypto_receive(connection)
+    #crypto_exchange(connection)
     
-    crypto_send(
-        connection, 
-        PacketObject(
-            b"hello",
-            PacketType.GATEWAY
-        )
-    )
+    #packet = crypto_receive(connection)
     
-    print("[server-receive]", packet)
+    #crypto_send(
+    #    connection, 
+    #    PacketObject(
+    #        b"hello",
+    #        PacketType.GATEWAY
+    #    )
+    #)
+    
+    #print("[server-receive]", packet)
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "client":

@@ -1,3 +1,5 @@
+import hashlib
+
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
 from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
 
@@ -30,14 +32,20 @@ def stream_receive(
             compiled_payload += packet.payload
         elif packet.type is PacketType.STREAM_END:
             break
-    
 
-    # TODO handle failed checksumming also make it work :D
+    md5_sum = hashlib.md5()
+    md5_sum.update(compiled_payload)
+    
+    received_checksum = packet.payload
+    checksum = md5_sum.digest()
+    
     send(
         connection,
-        PacketObject(b"checksum_here", PacketType.STREAM_END, id=id)
+        PacketObject(checksum, PacketType.STREAM_END)
     )
-
+    
+    assert checksum == received_checksum, "Receive stream checksum failed!"
+    
     return PacketObject(compiled_payload)
 
 
@@ -78,12 +86,22 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
         )
         
         # TODO stream interrupt, status_packet can return None!
+        
+    md5_sum = hashlib.md5()
+    md5_sum.update(raw_packet)
     
-    # TODO message handling for when checksum fails.
-    send_and_receive(
+    checksum = md5_sum.digest()
+
+    received_checksum = send_and_receive(
         connection,
-        PacketObject(b"checksum-here", PacketType.STREAM_END, packet.id)
-    )
+        PacketObject(
+            checksum, 
+            PacketType.STREAM_END, 
+            packet.id
+        )
+    ).payload
+    
+    assert checksum == received_checksum, "Send stream checksum failed!"
     
 
 def receive(

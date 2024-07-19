@@ -1,3 +1,5 @@
+import hashlib
+
 from Crypto.Cipher import AES
 
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
@@ -103,6 +105,8 @@ def crypto_receive(
 
     if packet.type is PacketType.CRYPTO:
         return decrypt_packet(connection, packet)
+    else:
+        return packet
         
 
 def crypto_send_and_receive(
