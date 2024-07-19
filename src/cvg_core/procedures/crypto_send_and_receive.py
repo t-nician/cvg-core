@@ -56,7 +56,6 @@ def encrypt_packet(
 
 def crypto_exchange(connection: ConnectionObject):
     if connection.type is ConnectionType.SERVER_TO_CLIENT:
-
         client_pem = send_and_receive(
             connection,
             PacketObject(
@@ -69,18 +68,8 @@ def crypto_exchange(connection: ConnectionObject):
         
         connection.client_crypto = ECDHObject(client_pem.payload)
         
-        cipher = AES.new(
-            key=__derive_aes_key(connection),
-            mode=AES.MODE_EAX
-        )
-        
-        crypto_confirm = send(
-            connection,
-            PacketObject(
-                cipher.nonce + cipher.encrypt(b"Hello!"),
-                PacketType.EXCHANGE
-            )
-        )
+        # TODO confirm crypto exchange. we just assume it's a success rn.
+        crypto_send(connection, PacketObject(b"Hello", PacketType.EXCHANGE))
         
     else:
         server_pem = receive(connection)
@@ -89,7 +78,7 @@ def crypto_exchange(connection: ConnectionObject):
         
         connection.server_crypto = ECDHObject(server_pem.payload)
         
-        crypto_test = send_and_receive(
+        send(
             connection,
             PacketObject(
                 __to_public_pem(connection), 
@@ -98,14 +87,9 @@ def crypto_exchange(connection: ConnectionObject):
             )
         )
         
-        cipher = AES.new(
-            key=__derive_aes_key(connection),
-            mode=AES.MODE_EAX,
-            nonce=crypto_test.payload[0:16]
-        )
+        # TODO confirm crypto exchange. we just assume it's a success rn.
+        crypto_receive(connection)
         
-        print("[decrypt]", cipher.decrypt(crypto_test.payload[16::]))
-
 
 def crypto_send(connection: ConnectionObject, packet: PacketObject):
     send(connection, encrypt_packet(connection, packet))
@@ -116,7 +100,7 @@ def crypto_receive(
     id: None | bytes = None
 ) -> PacketObject | None:
     packet = receive(connection, id=id)
-    
+
     if packet.type is PacketType.CRYPTO:
         return decrypt_packet(connection, packet)
         
