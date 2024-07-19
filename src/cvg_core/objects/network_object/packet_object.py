@@ -8,15 +8,15 @@ class PacketType(Enum):
     GATEWAY = b"\x00"
     EXCHANGE = b"\x01"
     
+    CRYPTO = b"\xe0"
+    
     PASSWORD = b"\x02"
     
     GRANTED = b"\xa0"
     DENIED = b"\xa1"
     
     COMMAND = b"\xc0"
-    CRYPTO = b"\xc1"
-    
-    RESPONSE = b"\xc2"
+    RESPONSE = b"\xc1"
     
     STREAM_START = b"\xb0"
     STREAM_DATA = b"\xb1"

@@ -8,14 +8,14 @@ from socket import socket, AF_INET, SOCK_STREAM
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
 from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
 
-from cvg_core.procedures.send_and_receive import send_and_receive, send, receive, stream_receive
+from cvg_core.procedures.send_and_receive import receive_into_and_send, send_and_receive, send, receive, stream_receive
 from cvg_core.procedures.crypto_send_and_receive import crypto_exchange, crypto_send_and_receive, crypto_send, crypto_receive
 
 from cvg_core.procedures.establish_connection import establish_connection
 
 ENCRYPTION_ENABLED = False
 
-big_password = b"cigarettes"*500
+big_password = b"500 cigarettes"
 
 def client_test():    
     sleep(1)
@@ -33,7 +33,14 @@ def client_test():
     
     sleep(0.1)
     
-    print("[client] server established?", connection.established)
+    #print(connection.established)
+    
+    #@send_and_receive(connection)
+    #def test(packet: PacketObject):
+    #    print("[client] [receive-into-and-send]", packet)
+    #    return PacketObject(b"success", PacketType.RESPONSE)
+    
+    print("[client] established?", connection.established)
 
 
 
@@ -50,7 +57,13 @@ def server_test():
     
     establish_connection(connection, big_password)
     
-    print("[server] client established?", connection.established)
+    #result = send_and_receive(
+    #    connection,
+    #    PacketObject(b"hello", PacketType.COMMAND)
+    #)
+    #print("[server] [receive-into-and-send]", result)
+    
+    print("[server] established?", connection.established)
 
 
 

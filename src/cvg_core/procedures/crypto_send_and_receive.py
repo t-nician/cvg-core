@@ -1,5 +1,7 @@
 import hashlib
 
+from typing import Callable
+
 from Crypto.Cipher import AES
 
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
@@ -116,3 +118,37 @@ def crypto_send_and_receive(
 ) -> PacketObject | None:
     crypto_send(connection, packet)
     return crypto_receive(connection, packet.id)
+
+
+def crypto_receive_and_send(
+    connection: ConnectionObject,
+    send_packet: PacketObject,
+    receive_type: PacketType | None = None,
+) -> PacketObject | None:
+    result = crypto_receive(connection, id or send_packet.id)
+    
+    if receive_type:
+        assert result.type is receive_type
+
+    crypto_send(connection, send_packet)
+    
+    return result
+
+
+def crypto_receive_into_and_send(
+    connection: ConnectionObject, 
+    type: PacketType | None = None, 
+    id: bytes | None = None
+):
+    def wrapper(func: Callable[[PacketObject], PacketObject], *args: any):
+        packet = crypto_receive(connection, id)
+        result = func(packet, *args)
+        
+        if type:
+            assert packet.type == type
+        
+        crypto_send(connection, result)
+        
+        return result
+    
+    return wrapper

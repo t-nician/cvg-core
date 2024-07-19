@@ -1,5 +1,7 @@
 import hashlib
 
+from typing import Callable
+
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
 from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
 
@@ -140,3 +142,37 @@ def send_and_receive(
 ) -> PacketObject | None:
     send(connection, packet)
     return receive(connection, packet.id)
+
+
+def receive_and_send(
+    connection: ConnectionObject,
+    send_packet: PacketObject,
+    receive_type: PacketType | None = None,
+) -> PacketObject | None:
+    result = receive(connection, id or send_packet.id)
+    
+    if receive_type:
+        assert result.type is receive_type
+
+    send(connection, send_packet)
+    
+    return result
+
+
+def receive_into_and_send(
+    connection: ConnectionObject, 
+    type: PacketType | None = None, 
+    id: bytes | None = None
+):
+    def wrapper(func: Callable[[PacketObject], PacketObject], *args: any):
+        packet = receive(connection, id)
+        result = func(packet, *args)
+        
+        if type:
+            assert packet.type is type
+        
+        send(connection, result)
+        
+        return result
+    
+    return wrapper
