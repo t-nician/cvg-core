@@ -27,7 +27,7 @@ def client_test():
     
     sleep(0.1)
     
-    print("[client received]", receive(connection, id=b"b"))
+    print("[client received]", receive(connection, id=b"a"))
 
 
 def server_test():

@@ -29,7 +29,8 @@ class PacketObject:
     type: PacketType = field(default=PacketType.UNKNOWN)
     
     id: bytes = field(default=b"\x00")
-
+    size: int = field(default=-1)
+    
     def __post_init__(self):
         if self.type is PacketType.UNKNOWN:
             if len(self.payload) < 2:
@@ -43,8 +44,25 @@ class PacketObject:
                 raise Exception("Invalid packet type!")
             
             self.payload = self.payload[2::]
+            self.size = self.get_size()
 
     def to_bytes(self) -> bytes:
-        return self.id + self.type.value + self.payload
+        encoded_packet = self.id + self.type.value + self.payload
+        
+        self.size = len(encoded_packet)
+        
+        return encoded_packet
+    
+    def get_size(self) -> int:
+        if self.size == -1:
+            self.to_bytes()
+            
+        return self.size
 
+    def set_payload(self, data: bytes):
+        self.payload = data
+    
+    def add_payload(self, data: bytes):
+        self.payload += data
+        
     

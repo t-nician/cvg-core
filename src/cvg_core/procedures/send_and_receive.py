@@ -33,12 +33,22 @@ def stream_receive(
 
 
 def stream_send(connection: ConnectionObject, packet: PacketObject):
-    pass
+    encoded_packet = packet.to_bytes()
+    
+    packet_stream_iterations = int(encoded_packet / 4096)
+    remaining_bytes_amount = encoded_packet % 4096
+    
+    
+    
+    #type(packet) is PacketObject and packet.to_bytes() or packet
 
 
 def send_and_receive(
     connection: ConnectionObject, packet: PacketObject
 ) -> PacketObject:
-    send(connection, packet)
+    if packet.get_size() > 4096:
+        stream_send(connection, packet)
+    else:
+        send(connection, packet)
     
     return receive(connection, packet.id)
