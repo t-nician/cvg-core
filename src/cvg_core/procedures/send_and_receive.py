@@ -16,11 +16,15 @@ def stream_receive(
         stream_packet
     )
     
+    # TODO packet can return None handle interrupt
+    
     if packet.type is PacketType.STREAM_DATA:
         compiled_payload += packet.payload
     
     while True:
         packet = send_and_receive(connection, stream_packet)
+        
+        # TODO packet can return None handle interrupt
         
         if packet.type is PacketType.STREAM_DATA:
             compiled_payload += packet.payload
@@ -63,6 +67,8 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
         )
     )
     
+    # TODO packet can return None handle interrupt
+    
     assert ready_packet.type is PacketType.STREAM_DATA
     
     for chunk in chunk_list:
@@ -71,7 +77,7 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
             PacketObject(chunk, PacketType.STREAM_DATA, packet.id)
         )
         
-        # TODO stream interrupt
+        # TODO stream interrupt, status_packet can return None!
     
     # TODO message handling for when checksum fails.
     send_and_receive(
@@ -113,6 +119,6 @@ def send(connection: ConnectionObject, packet: PacketObject):
 
 def send_and_receive(
     connection: ConnectionObject, packet: PacketObject
-) -> PacketObject:
+) -> PacketObject | None:
     send(connection, packet)
     return receive(connection, packet.id)

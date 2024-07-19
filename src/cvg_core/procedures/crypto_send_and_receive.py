@@ -27,6 +27,33 @@ def __to_public_pem(connection: ConnectionObject):
             return connection.client_crypto.to_public_pem()
 
 
+def decrypt_packet(
+    connection: ConnectionObject, packet: PacketObject
+) -> PacketObject:
+    return PacketObject(
+        AES.new(
+            key=__derive_aes_key(connection),
+            mode=AES.MODE_EAX,
+            nonce=packet.payload[0:16]
+        ).decrypt(packet.payload[16::])
+    )
+
+
+def encrypt_packet(
+    connection: ConnectionObject, packet: PacketObject
+) -> PacketObject:
+    cipher = AES.new(
+        key=__derive_aes_key(connection),
+        mode=AES.MODE_EAX
+    )
+    
+    return PacketObject(
+        cipher.nonce + cipher.encrypt(packet.to_bytes()),
+        PacketType.CRYPTO,
+        id=packet.id
+    )
+
+
 def crypto_exchange(connection: ConnectionObject):
     if connection.type is ConnectionType.SERVER_TO_CLIENT:
 
@@ -81,26 +108,22 @@ def crypto_exchange(connection: ConnectionObject):
 
 
 def crypto_send(connection: ConnectionObject, packet: PacketObject):
-    encryption_key = __derive_aes_key(connection)
+    send(connection, encrypt_packet(connection, packet))
     
-    cipher = AES.new(key=encryption_key, mode=AES.MODE_EAX)
-    
-    nonce = cipher.nonce
-    raw_encrypted_packet = cipher.encrypt(packet.to_bytes())
-    
-    crypto_packet = PacketObject(
-        nonce + raw_encrypted_packet,
-        PacketType.CRYPTO,
-        id=packet.id
-    )
-    
-    send(connection, crypto_packet)
 
-
-def crypto_receive(connection: ConnectionObject, id: None | bytes = None):
+def crypto_receive(
+    connection: ConnectionObject, 
+    id: None | bytes = None
+) -> PacketObject | None:
     packet = receive(connection, id=id)
     
     if packet.type is PacketType.CRYPTO:
-        encryption_key = __derive_aes_key(connection)
+        return decrypt_packet(connection, packet)
         
-        
+
+def crypto_send_and_receive(
+    connection: ConnectionObject,
+    packet: PacketObject
+) -> PacketObject | None:
+    crypto_send(connection, packet)
+    return crypto_receive(connection, packet.id)
