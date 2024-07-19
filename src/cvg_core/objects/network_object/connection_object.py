@@ -33,7 +33,7 @@ class ConnectionObject:
     state: ConnectionState = field(default=ConnectionState.GREETING)
     
     def __post_init__(self):
-        match type(self.type):
+        match self.type:
             case ConnectionType.CLIENT_TO_SERVER:
                 self.client_crypto = ECDHObject()
             case ConnectionType.SERVER_TO_CLIENT:

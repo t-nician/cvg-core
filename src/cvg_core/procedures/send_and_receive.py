@@ -27,14 +27,13 @@ def stream_receive(
         elif packet.type is PacketType.STREAM_END:
             break
     
-    checksum = packet.payload
+
     # TODO handle failed checksumming also make it work :D
-    final_message = send(
+    send(
         connection,
         PacketObject(b"checksum_here", PacketType.STREAM_END, id=id)
     )
-    #Aassert len(compiled_payload) + 2 == size, "PacketObject.size mismatch!"
-    
+
     return PacketObject(compiled_payload)
 
 
@@ -55,7 +54,6 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
     
     chunk_list.append(raw_packet[packet_size - chunk_remainder: packet_size])
     
-    #print("getting ready packet")
     ready_packet = send_and_receive(
         connection,
         PacketObject(
@@ -72,14 +70,14 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
             connection,
             PacketObject(chunk, PacketType.STREAM_DATA, packet.id)
         )
+        
+        # TODO stream interrupt
     
     # TODO message handling for when checksum fails.
-    final_message = send_and_receive(
+    send_and_receive(
         connection,
         PacketObject(b"checksum-here", PacketType.STREAM_END, packet.id)
     )
-    
-    #print("[checksum]", checksum_packet)
     
 
 def receive(
@@ -92,8 +90,6 @@ def receive(
         packet = PacketObject(connection.socket.recv(4096))
     except Exception as _:
         pass
-    
-    #print("[received]", packet)
     
     if packet and id is not None:
         assert packet.id == id, ERR_MSG_ID_MISMATCH.format(id, packet.id)
