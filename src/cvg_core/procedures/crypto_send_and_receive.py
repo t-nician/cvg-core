@@ -65,10 +65,9 @@ def crypto_exchange(connection: ConnectionObject):
             PacketObject(
                 __to_public_pem(connection),
                 PacketType.EXCHANGE
-            )
+            ),
+            PacketType.EXCHANGE
         )
-        
-        assert client_pem.type is PacketType.EXCHANGE
         
         connection.client_crypto = ECDHObject(client_pem.payload)
         
@@ -76,9 +75,7 @@ def crypto_exchange(connection: ConnectionObject):
         crypto_send(connection, PacketObject(b"Hello", PacketType.EXCHANGE))
         
     else:
-        server_pem = receive(connection)
-        
-        assert server_pem.type is PacketType.EXCHANGE
+        server_pem = receive(connection, PacketType.EXCHANGE)
         
         connection.server_crypto = ECDHObject(server_pem.payload)
         
@@ -102,30 +99,36 @@ def crypto_send(connection: ConnectionObject, packet: PacketObject):
     
 
 def crypto_receive(
-    connection: ConnectionObject, 
+    connection: ConnectionObject,
+    receive_type: PacketType | None = None,
     id: None | bytes = None
 ) -> PacketObject | None:
-    packet = receive(connection, id=id)
+    packet = receive(connection, PacketType.CRYPTO, id)
     
-    assert packet.type is PacketType.CRYPTO
+    result = decrypt_packet(connection, packet)
     
-    return decrypt_packet(connection, packet)
+    if receive_type:
+        assert result.type is receive_type, f"got {result.type} expected {receive_type}"
+    
+    return result
         
 
 def crypto_send_and_receive(
     connection: ConnectionObject,
-    packet: PacketObject
+    packet: PacketObject,
+    receive_type: PacketType | None = None
 ) -> PacketObject | None:
     crypto_send(connection, packet)
-    return crypto_receive(connection, packet.id)
+    return crypto_receive(connection, receive_type, packet.id)
 
 
 def crypto_receive_and_send(
     connection: ConnectionObject,
     send_packet: PacketObject,
     receive_type: PacketType | None = None,
+    id: bytes | None = None,
 ) -> PacketObject | None:
-    result = crypto_receive(connection, id or send_packet.id)
+    result = crypto_receive(connection, receive_type, id)
     
     if receive_type:
         assert result.type is receive_type
@@ -141,11 +144,8 @@ def crypto_receive_into_and_send(
     id: bytes | None = None
 ):
     def wrapper(func: Callable[[PacketObject], PacketObject], *args: any):
-        packet = crypto_receive(connection, id)
+        packet = crypto_receive(connection, type, id)
         result = func(packet, *args)
-        
-        if type:
-            assert packet.type == type
         
         crypto_send(connection, result)
         

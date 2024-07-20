@@ -12,7 +12,8 @@ def command_send_and_receive(
 ) -> PacketObject:
     return SendReceiveProcedures(connection).send_and_receive(
         connection,
-        PacketObject(command, PacketType.COMMAND, id)
+        PacketObject(command, PacketType.COMMAND, id),
+        PacketType.RESPONSE
     )
     
 
@@ -25,7 +26,7 @@ def command_receive_and_send(
         connection,
         packet,
         PacketType.COMMAND,
-        #id
+        id
     )
 
 

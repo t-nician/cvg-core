@@ -108,6 +108,7 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
 
 def receive(
     connection: ConnectionObject, 
+    receive_type: PacketType | None = None,
     id: bytes | None = None
 ) -> PacketObject | None:
     packet: PacketObject | None = None
@@ -119,6 +120,9 @@ def receive(
     
     if packet and id is not None:
         assert packet.id == id, ERR_MSG_ID_MISMATCH.format(id, packet.id)
+        
+    if packet and receive_type:
+        assert packet.type is receive_type, f"expected {receive_type} got {packet.type}"
     
     if packet is not None and packet.type is PacketType.STREAM_START:
         packet = stream_receive(
@@ -138,21 +142,26 @@ def send(connection: ConnectionObject, packet: PacketObject):
 
 
 def send_and_receive(
-    connection: ConnectionObject, packet: PacketObject
+    connection: ConnectionObject, packet: PacketObject,
+    receive_type: PacketType | None = None
 ) -> PacketObject | None:
     send(connection, packet)
-    return receive(connection, packet.id)
+    
+    result = receive(connection, receive_type, packet.id)
+    
+    if receive_type:
+        assert result.type is receive_type
+    
+    return result
 
 
 def receive_and_send(
     connection: ConnectionObject,
     send_packet: PacketObject,
     receive_type: PacketType | None = None,
+    id: bytes | None = None
 ) -> PacketObject | None:
-    result = receive(connection, id or send_packet.id)
-    
-    if receive_type:
-        assert result.type is receive_type
+    result = receive(connection, receive_type, id)
 
     send(connection, send_packet)
     
@@ -165,11 +174,8 @@ def receive_into_and_send(
     id: bytes | None = None
 ):
     def wrapper(func: Callable[[PacketObject], PacketObject], *args: any):
-        packet = receive(connection, id)
+        packet = receive(connection, type, id)
         result = func(packet, *args)
-        
-        if type:
-            assert packet.type is type
         
         send(connection, result)
         

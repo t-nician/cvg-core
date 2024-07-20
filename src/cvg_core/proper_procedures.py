@@ -18,7 +18,7 @@ class SendReceiveProcedures:
     ] = field(default=receive_into_and_send)
     
     send_and_receive: Callable[
-        [ConnectionObject, PacketObject], PacketObject | None
+        [ConnectionObject, PacketObject, PacketType | None], PacketObject | None
     ] = field(default=send_and_receive)
     
     receive_and_send: Callable[
