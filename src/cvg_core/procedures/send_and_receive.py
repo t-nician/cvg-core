@@ -124,8 +124,6 @@ def receive(
         pass
     
     if packet and receive_id is not None:
-        #bytes.__eq__(packet.id, id)
-        print(packet.id, receive_id)
         assert packet.id == receive_id, ERR_MSG_ID_MISMATCH.format(
             receive_id, 
             packet.id

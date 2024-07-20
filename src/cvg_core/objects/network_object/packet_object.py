@@ -61,6 +61,9 @@ class PacketObject:
             self.to_bytes()
             
         return self.size
+    
+    def get_payload_size(self) -> int:
+        return self.get_size() - 2
 
     def set_payload(self, data: bytes):
         self.payload = data

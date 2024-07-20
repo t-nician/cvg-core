@@ -8,40 +8,38 @@ from cvg_core.procedures.crypto_send_and_receive import crypto_exchange
 
 
 def __fab_granted(
-    id: int | PacketObject | None = None, 
+    packet: PacketObject | bytes, 
     payload: bytes | None = b""
 ) -> PacketObject:
-    if type(id) is PacketObject:
-        id = id.id
-        
-    return PacketObject(payload, PacketType.GRANTED, id)
+    if type(packet) is bytes:  
+        return PacketObject(payload, PacketType.GRANTED, packet)
+    else:
+        return PacketObject(payload, PacketType.GRANTED, packet.id)
 
 
 def __fab_denied(
-    id: int | PacketObject | None = None, 
+    packet: PacketObject | bytes, 
     payload: bytes | None = b""
 ) -> PacketObject:
-    if type(id) is PacketObject:
-        id = id.id
-        
-    return PacketObject(payload, PacketType.DENIED, id)
+    if type(packet) is bytes:  
+        return PacketObject(payload, PacketType.DENIED, packet)
+    else:
+        return PacketObject(payload, PacketType.DENIED, packet.id)
 
 
 def __fab_password(
-    id: int | PacketObject | None = None, 
+    packet: bytes | PacketObject,
     password: bytes | None = b""
 ):
-    if type(id) is PacketObject:
-        id = id.id
-        
-    return PacketObject(password, PacketType.PASSWORD, id)
+    if type(packet) is bytes:  
+        return PacketObject(password, PacketType.PASSWORD, packet)
+    else:
+        return PacketObject(password, PacketType.PASSWORD, packet.id)
 
 
 def __exchange_password(
-    procedures: SendReceiveProcedures,
-    connection: ConnectionObject,
-    packet: PacketObject, 
-    compare_password: bytes
+    packet: PacketObject, connection: ConnectionObject, 
+    compare_password: bytes, procedures: SendReceiveProcedures
 ) -> PacketObject:
     received_password: PacketObject = procedures.send_and_receive(
         connection,
@@ -50,9 +48,9 @@ def __exchange_password(
 
     if received_password.payload == compare_password:
         connection.established = True
-        return __fab_granted(received_password.id)
+        return __fab_granted(received_password)
     else:
-        return __fab_denied(received_password.id)
+        return __fab_denied(received_password)
 
 
 def establish_connection(
@@ -72,12 +70,10 @@ def establish_connection(
                 connection,
                 PacketType.GATEWAY
             )(
-                lambda _: __exchange_password(
-                    packet=_,
-                    compare_password=password,
-                    connection=connection,
-                    procedures=procedures
-                )
+                __exchange_password,
+                connection,
+                password,
+                procedures
             )
         else:
             gateway_packet = procedures.receive_into_and_send(
@@ -96,7 +92,7 @@ def establish_connection(
         if entry_response.type is PacketType.PASSWORD:            
             password_response: PacketObject = procedures.send_and_receive(
                 connection,
-                __fab_password(entry_response.id, password)
+                __fab_password(entry_response, password)
             )
             
             if password_response.type is PacketType.GRANTED:
