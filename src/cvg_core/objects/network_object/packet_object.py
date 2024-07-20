@@ -33,6 +33,7 @@ class PacketObject:
     
     def __post_init__(self):
         if self.type is PacketType.UNKNOWN:
+            # TODO replace ifs with asserts
             if len(self.payload) < 2:
                 raise Exception("Invalid payload length!")
             

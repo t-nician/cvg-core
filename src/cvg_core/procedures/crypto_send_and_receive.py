@@ -89,7 +89,7 @@ def crypto_exchange(connection: ConnectionObject):
         )
         
         # TODO confirm crypto exchange. we just assume it's a success rn.
-        crypto_receive(connection)
+        crypto_receive(connection, PacketType.EXCHANGE)
         
         connection.encryption_enabled = True
         
@@ -108,6 +108,7 @@ def crypto_receive(
     result = decrypt_packet(connection, packet)
     
     if receive_type:
+        # TODO move err msg, do not remove this. This assert is required.
         assert result.type is receive_type, f"got {result.type} expected {receive_type}"
     
     return result
@@ -129,9 +130,6 @@ def crypto_receive_and_send(
     id: bytes | None = None,
 ) -> PacketObject | None:
     result = crypto_receive(connection, receive_type, id)
-    
-    if receive_type:
-        assert result.type is receive_type
 
     crypto_send(connection, send_packet)
     

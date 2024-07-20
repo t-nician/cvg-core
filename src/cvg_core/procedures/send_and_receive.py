@@ -13,7 +13,7 @@ def stream_receive(
     id: bytes | None = b"\xff"
 ) -> PacketObject:
     compiled_payload = b""
-    stream_packet = PacketObject(type=PacketType.STREAM_DATA, id=id)
+    stream_packet = PacketObject(b"", PacketType.STREAM_DATA, id)
     
     packet = send_and_receive(
         connection, 
@@ -34,6 +34,9 @@ def stream_receive(
             compiled_payload += packet.payload
         elif packet.type is PacketType.STREAM_END:
             break
+
+    # TODO add err msg
+    assert len(compiled_payload) == size
 
     md5_sum = hashlib.md5()
     md5_sum.update(compiled_payload)
@@ -74,12 +77,11 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
             packet_size.to_bytes(8, "big"), 
             PacketType.STREAM_START, 
             packet.id
-        )
+        ),
+        PacketType.STREAM_DATA
     )
     
     # TODO packet can return None handle interrupt
-    
-    assert ready_packet.type is PacketType.STREAM_DATA
     
     for chunk in chunk_list:
         status_packet = send_and_receive(
@@ -88,7 +90,9 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
         )
         
         # TODO stream interrupt, status_packet can return None!
+        # TODO check if status is not stream_data, could be cancelled/failed.
         
+    # TODO is this really the cleanest I can do?
     md5_sum = hashlib.md5()
     md5_sum.update(raw_packet)
     
@@ -103,6 +107,7 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
         )
     ).payload
     
+    # TODO move err msg
     assert checksum == received_checksum, "Send stream checksum failed!"
     
 
@@ -120,7 +125,8 @@ def receive(
     
     if packet and id is not None:
         assert packet.id == id, ERR_MSG_ID_MISMATCH.format(id, packet.id)
-        
+    
+    # TODO move err msg
     if packet and receive_type:
         assert packet.type is receive_type, f"expected {receive_type} got {packet.type}"
     
@@ -150,6 +156,7 @@ def send_and_receive(
     result = receive(connection, receive_type, packet.id)
     
     if receive_type:
+        # TODO add err msg.
         assert result.type is receive_type
     
     return result
