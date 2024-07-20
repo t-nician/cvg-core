@@ -11,6 +11,7 @@ from cvg_core.objects.crypto_object.ecdh_object import ECDHObject
 
 from cvg_core.procedures.send_and_receive import send_and_receive, send, receive
 
+
 def __derive_aes_key(connection: ConnectionObject):
     match connection.type:
         case ConnectionType.SERVER_TO_CLIENT:
@@ -127,10 +128,12 @@ def crypto_receive_and_send(
     connection: ConnectionObject,
     send_packet: PacketObject,
     receive_type: PacketType | None = None,
-    id: bytes | None = None,
+    receive_id: bytes | None = None,
 ) -> PacketObject | None:
-    result = crypto_receive(connection, receive_type, id)
+    result = crypto_receive(connection, receive_type, receive_id)
 
+    send_packet.id = result.id
+    
     crypto_send(connection, send_packet)
     
     return result

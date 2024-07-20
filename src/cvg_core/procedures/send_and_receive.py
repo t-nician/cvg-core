@@ -114,7 +114,7 @@ def stream_send(connection: ConnectionObject, packet: PacketObject):
 def receive(
     connection: ConnectionObject, 
     receive_type: PacketType | None = None,
-    id: bytes | None = None
+    receive_id: bytes | None = None
 ) -> PacketObject | None:
     packet: PacketObject | None = None
     
@@ -123,9 +123,14 @@ def receive(
     except Exception as _:
         pass
     
-    if packet and id is not None:
-        assert packet.id == id, ERR_MSG_ID_MISMATCH.format(id, packet.id)
-    
+    if packet and receive_id is not None:
+        #bytes.__eq__(packet.id, id)
+        print(packet.id, receive_id)
+        assert packet.id == receive_id, ERR_MSG_ID_MISMATCH.format(
+            receive_id, 
+            packet.id
+        )
+
     # TODO move err msg
     if packet and receive_type:
         assert packet.type is receive_type, f"expected {receive_type} got {packet.type}"
@@ -170,6 +175,8 @@ def receive_and_send(
 ) -> PacketObject | None:
     result = receive(connection, receive_type, id)
 
+    send_packet.id = result.id
+    
     send(connection, send_packet)
     
     return result

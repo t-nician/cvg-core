@@ -31,17 +31,7 @@ def client_test():
     
     establish_connection(connection, big_password)
     
-    result = command_send_and_receive(connection, b"hello")
-    
-    
-    #sleep(0.1)
-    
-    #print(connection.established)
-    
-    #@send_and_receive(connection)
-    #def test(packet: PacketObject):
-    #    print("[client] [receive-into-and-send]", packet)
-    #    return PacketObject(b"success", PacketType.RESPONSE)
+    result = command_send_and_receive(connection, b"hello", b"3")
     
     print("[client] established?", result)#, result)
 
