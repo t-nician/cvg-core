@@ -17,13 +17,13 @@ def stream_receive(
     
     packet = send_and_receive(
         connection, 
-        stream_packet
+        stream_packet,
+        PacketType.STREAM_DATA
     )
     
     # TODO packet can return None handle interrupt
     
-    if packet.type is PacketType.STREAM_DATA:
-        compiled_payload += packet.payload
+    compiled_payload += packet.payload
     
     while True:
         packet = send_and_receive(connection, stream_packet)
@@ -160,10 +160,6 @@ def send_and_receive(
     
     result = receive(connection, receive_type, packet.id)
     
-    if receive_type:
-        # TODO add err msg.
-        assert result.type is receive_type
-    
     return result
 
 
@@ -171,9 +167,9 @@ def receive_and_send(
     connection: ConnectionObject,
     send_packet: PacketObject,
     receive_type: PacketType | None = None,
-    id: bytes | None = None
+    receive_id: bytes | None = None
 ) -> PacketObject | None:
-    result = receive(connection, receive_type, id)
+    result = receive(connection, receive_type, receive_id)
 
     send_packet.id = result.id
     
@@ -184,11 +180,11 @@ def receive_and_send(
 
 def receive_into_and_send(
     connection: ConnectionObject, 
-    type: PacketType | None = None, 
-    id: bytes | None = None
+    receive_type: PacketType | None = None, 
+    receive_id: bytes | None = None
 ):
     def wrapper(func: Callable[[PacketObject], PacketObject], *args: any):
-        packet = receive(connection, type, id)
+        packet = receive(connection, receive_type, receive_id)
         result = func(packet, *args)
         
         send(connection, result)
