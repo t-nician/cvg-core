@@ -27,12 +27,16 @@ def client_example():
 
     # At this point it's up to on what you want to do.
     command_result_a = client_procedures.send_and_receive(
-        PacketObject(b"hello", PacketType.COMMAND, id=b"\x03"),
+        b"hello", 
+        PacketType.COMMAND,
+        b"\x03",
         PacketType.RESPONSE
     )
 
     command_result_b = client_procedures.send_and_receive(
-        PacketObject(b"hello", PacketType.COMMAND, id=b"\x03"),
+        b"hello", 
+        PacketType.COMMAND, 
+        b"\x03",
         PacketType.RESPONSE
     )
 
@@ -68,8 +72,9 @@ def server_example():
 
     # Or send a premade packet upon receive.
     command_packet = client_procedures.receive_and_send(
-        PacketObject(b"world_b", PacketType.RESPONSE),
-        PacketType.COMMAND
+        b"world_b", 
+        PacketType.RESPONSE,
+        receive_type=PacketType.COMMAND
     )
     
     print("[server] client command received", command_packet)

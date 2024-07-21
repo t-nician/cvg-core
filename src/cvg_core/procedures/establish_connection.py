@@ -15,17 +15,55 @@ from cvg_core.procedures.crypto_send_and_receive import crypto_exchange
     # no password:
         # server GRANTED -> client
 
+
+def __compare_password(password_packet: PacketObject, password: bytes):
+    if password_packet.payload == password:
+        return PacketObject(b"", PacketType.GRANTED)    
+    else:
+        return PacketObject(b"", PacketType.DENIED)
+
+
 def __server_to_client(
     procedures: SendReceiveProcedures, password: bytes | None
 ):
-    pass
+    gateway_packet = procedures.receive_and_send(
+        send_payload=b"",
+        send_type=password and PacketType.PASSWORD or PacketType.GRANTED,
+        receive_type=PacketType.GATEWAY
+    )
     
-
+    if password:
+        procedures.receive_into_and_send(
+            receive_type=PacketType.PASSWORD,
+            receive_id=gateway_packet.id
+        )(__compare_password, password)
+        
 
 def __client_to_server(
     procedures: SendReceiveProcedures, password: bytes | None
 ):
-    pass
+    access_check = procedures.send_and_receive(
+        send_payload=b"",
+        send_type=PacketType.GATEWAY
+    )
+    
+    if access_check.type is PacketType.PASSWORD:
+        password_check = procedures.send_and_receive(
+            send_payload=password,
+            send_type=PacketType.PASSWORD,
+            send_id = access_check.id,
+        )
+        
+        if password_check.type is PacketType.GRANTED:
+            procedures.connection.established = True
+        else:
+            procedures.connection.established = False
+            
+    elif access_check.type is PacketType.GRANTED:
+        procedures.connection.established = True
+    else:
+        procedures.connection.established = False
+        # whut?
 
 
 def establish_connection(
