@@ -11,7 +11,6 @@ def command_send_and_receive(
     id: bytes | None = None
 ) -> PacketObject:
     return SendReceiveProcedures(connection).send_and_receive(
-        connection,
         PacketObject(command, PacketType.COMMAND, id),
         PacketType.RESPONSE
     )
@@ -23,7 +22,6 @@ def command_receive_and_send(
     id: bytes | None = None
 ) -> PacketObject:
     return SendReceiveProcedures(connection).receive_and_send(
-        connection,
         packet,
         PacketType.COMMAND,
         id
@@ -38,13 +36,13 @@ def command_receive_into_and_send(
     procedures = SendReceiveProcedures(connection)
     
     def wrapper(func: Callable[[PacketObject], PacketObject], *args: any):
-        packet = procedures.receive(connection, id)
+        packet = procedures.receive(id)
         result = func(packet, *args)
         
         if type:
             assert packet.type == type
         
-        procedures.send(connection, result)
+        procedures.send(result)
         
         return result
     
