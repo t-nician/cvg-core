@@ -21,6 +21,11 @@ Force the client to disable encryption before continuing the connection \
 ## How do you use it?
 Here are some brief examples on establishing a connection using cvg-core.
 ```python
+from time import sleep
+from threading import Thread
+
+from socket import socket, AF_INET, SOCK_STREAM
+
 from cvg_core.proper_procedures import SendReceiveProcedures
 from cvg_core.procedures.establish_connection import establish_connection
 
