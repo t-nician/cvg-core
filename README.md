@@ -44,7 +44,6 @@ def client_example():
     )
 
     client_procedures = establish_connection(client_connection, password)
-    #client_procedures.receive_and_send()
 
     # At this point it's up to on what you want to do.
     command_result_a = client_procedures.send_and_receive(
