@@ -3,7 +3,7 @@ import hashlib
 from typing import Callable
 
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
-from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
+from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionObject
 
 ERR_MSG_ID_MISMATCH = "PacketObject.id mismatch! Expected {0} got {0}"
 ERR_MSG_STREAM_NOT_READY = "Connection is not ready for stream!"

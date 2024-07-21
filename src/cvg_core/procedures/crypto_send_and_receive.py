@@ -5,7 +5,7 @@ from typing import Callable
 from Crypto.Cipher import AES
 
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
-from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
+from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionObject
 
 from cvg_core.objects.crypto_object.ecdh_object import ECDHObject
 

@@ -7,13 +7,6 @@ from socket import socket as _socket
 from cvg_core.objects.crypto_object.ecdh_object import ECDHObject
 
 
-class ConnectionState(Enum):
-    GREETING = "greeting"
-    AUTHORIZED = "authorized"
-    RESPONDING = "responding"
-    STREAMING = "streaming"
-
-
 class ConnectionType(Enum):
     CLIENT_TO_SERVER = "client_to_server"
     SERVER_TO_CLIENT = "server_to_client"
@@ -32,7 +25,6 @@ class ConnectionObject:
     server_crypto: ECDHObject | None = field(default=None)
     client_crypto: ECDHObject | None = field(default=None)
     
-    state: ConnectionState = field(default=ConnectionState.GREETING)
     established: bool = field(default=False)
     
     def __post_init__(self):

@@ -1,12 +1,41 @@
-from typing import Callable
-
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
-from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionState, ConnectionObject
+from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionObject
 
 from cvg_core.proper_procedures import SendReceiveProcedures
 from cvg_core.procedures.crypto_send_and_receive import crypto_exchange
 
+# NOTE remember to add connection.established value when done.
 
+def __server_to_client(
+    procedures: SendReceiveProcedures, password: bytes | None
+):
+    pass
+
+
+def __client_to_server(
+    procedures: SendReceiveProcedures, password: bytes | None
+):
+    pass
+
+
+def establish_connection(
+    connection: ConnectionObject, 
+    password: bytes | None = None
+) -> SendReceiveProcedures:
+    crypto_exchange(connection)
+    
+    procedures = SendReceiveProcedures(connection)
+    
+    if password:
+        match connection.type:
+            case ConnectionType.SERVER_TO_CLIENT:
+                pass
+            case ConnectionType.CLIENT_TO_SERVER:
+                pass
+    
+    return procedures
+
+"""
 def __fab_granted(
     packet: PacketObject | bytes, 
     payload: bytes | None = b""
@@ -95,4 +124,4 @@ def establish_connection(
                 raise Exception("Incorrect password!")
             
         elif entry_response.type is PacketType.GRANTED:
-            connection.established = True
+            connection.established = True"""

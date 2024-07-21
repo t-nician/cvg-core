@@ -1,6 +1,6 @@
 #pip install cvg-core
 
-"""import sys
+import sys
 
 from time import sleep
 from threading import Thread
@@ -23,9 +23,7 @@ def client_example():
         client_connection.address
     )
 
-    establish_connection(client_connection, password)
-
-    client_procedures = SendReceiveProcedures(client_connection)
+    client_procedures = establish_connection(client_connection, password)
 
     # At this point it's up to on what you want to do.
     command_result_a = client_procedures.send_and_receive(
@@ -56,9 +54,7 @@ def server_example():
         encryption_enabled=True
     ) 
         
-    establish_connection(client_connection, password)
-
-    client_procedures = SendReceiveProcedures(client_connection)
+    client_procedures = establish_connection(client_connection, password)
 
     # At this point it's up to on what you want to do.
 
@@ -80,4 +76,4 @@ def server_example():
 
 Thread(target=server_example).start()
 sleep(1)
-client_example()"""
+client_example()
