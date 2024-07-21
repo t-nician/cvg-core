@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Any, Callable
 from dataclasses import dataclass, field
 
 from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
@@ -12,35 +12,86 @@ from cvg_core.procedures.crypto_send_and_receive import crypto_send_and_receive,
 class SendReceiveProcedures:
     connection: ConnectionObject
     
-    receive_into_and_send: Callable[
+    __receive_into_and_send: Callable[
         [ConnectionObject, PacketType | None, bytes | None],
         Callable
     ] = field(default=receive_into_and_send)
     
-    send_and_receive: Callable[
+    __send_and_receive: Callable[
         [ConnectionObject, PacketObject, PacketType | None], PacketObject | None
     ] = field(default=send_and_receive)
     
-    receive_and_send: Callable[
+    __receive_and_send: Callable[
         [ConnectionObject, PacketObject, PacketType | None, bytes | None], 
         PacketObject | None
     ] = field(default=receive_and_send)
     
-    receive: Callable[
+    __receive: Callable[
         [ConnectionObject, bytes | None], PacketObject | None
     ] = field(default=receive)
     
-    send: Callable[
+    __send: Callable[
         [ConnectionObject, PacketObject], PacketObject | None
     ] = field(default=send)
-    
+
     def __post_init__(self):
         if self.connection and self.connection.encryption_enabled:
-            self.receive_into_and_send = crypto_receive_into_and_send
+            self.__receive_into_and_send = crypto_receive_into_and_send
             
-            self.send_and_receive = crypto_send_and_receive
-            self.receive_and_send = crypto_receive_and_send
+            self.__send_and_receive = crypto_send_and_receive
+            self.__receive_and_send = crypto_receive_and_send
             
-            self.receive = crypto_receive
-            self.send = crypto_send
-            
+            self.__receive = crypto_receive
+            self.__send = crypto_send
+    
+    def receive_into_and_send(
+        self, 
+        receive_type: PacketType | None = None, 
+        receive_id: bytes | None = None
+    ) -> PacketObject:
+        return self.__receive_into_and_send(
+            self.connection,
+            receive_type,
+            receive_id
+        )
+    
+    def send_and_receive(
+        self,
+        packet: PacketObject,
+        receive_type: PacketType | None = None
+    ) -> PacketObject:
+        return self.__send_and_receive(
+            self.connection,
+            packet,
+            receive_type,
+        )
+        
+    def receive_and_send(
+        self,
+        send_packet: PacketObject,
+        receive_type: PacketType | None = None,
+        receive_id: bytes | None = None
+    ) -> PacketObject:
+        return self.__receive_and_send(
+            self.connection,
+            send_packet,
+            receive_type,
+            receive_id
+        )
+        
+    def receive(
+        self,
+        receive_type: PacketType | None = None,
+        receive_id: bytes | None = None
+    ) -> PacketObject:
+        return self.__receive(
+            self.connection,
+            receive_type,
+            receive_id
+        )
+        
+    def send(
+        self,
+        packet: PacketObject
+    ):
+        self.__send(self.connection, packet)

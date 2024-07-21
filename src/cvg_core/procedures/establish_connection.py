@@ -38,16 +38,15 @@ def __fab_password(
 
 
 def __exchange_password(
-    packet: PacketObject, connection: ConnectionObject, 
+    packet: PacketObject,
     compare_password: bytes, procedures: SendReceiveProcedures
 ) -> PacketObject:
     received_password: PacketObject = procedures.send_and_receive(
-        connection,
         __fab_password(packet)
     )
 
     if received_password.payload == compare_password:
-        connection.established = True
+        procedures.connection.established = True
         return __fab_granted(received_password)
     else:
         return __fab_denied(received_password)
@@ -67,17 +66,14 @@ def establish_connection(
         
         if password:
             gateway_packet = procedures.receive_into_and_send(
-                connection,
                 PacketType.GATEWAY
             )(
                 __exchange_password,
-                connection,
                 password,
                 procedures
             )
         else:
             gateway_packet = procedures.receive_into_and_send(
-                connection,
                 PacketType.GATEWAY
             )(__fab_granted)
         
@@ -85,13 +81,11 @@ def establish_connection(
         
     elif connection.type is ConnectionType.CLIENT_TO_SERVER:
         entry_response: PacketObject = procedures.send_and_receive(
-            connection,
             PacketObject(b"", PacketType.GATEWAY)
         )
         
         if entry_response.type is PacketType.PASSWORD:            
             password_response: PacketObject = procedures.send_and_receive(
-                connection,
                 __fab_password(entry_response, password)
             )
             
