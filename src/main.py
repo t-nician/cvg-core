@@ -1,6 +1,6 @@
 #pip install cvg-core
 
-"""
+
 import sys
 
 from time import sleep
@@ -88,4 +88,3 @@ def server_example():
 Thread(target=server_example).start()
 sleep(1)
 client_example()
-"""
