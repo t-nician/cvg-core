@@ -6,10 +6,20 @@ from cvg_core.procedures.crypto_send_and_receive import crypto_exchange
 
 # NOTE remember to add connection.established value when done.
 
+# password exchange plan
+# client GATEWAY -> server
+    # yes password:
+        # server PASSWORD -> client
+        # client PASSWORD -> server
+        # server GRANTED/DENIED -> client
+    # no password:
+        # server GRANTED -> client
+
 def __server_to_client(
     procedures: SendReceiveProcedures, password: bytes | None
 ):
     pass
+    
 
 
 def __client_to_server(
@@ -26,12 +36,10 @@ def establish_connection(
     
     procedures = SendReceiveProcedures(connection)
     
-    if password:
-        match connection.type:
-            case ConnectionType.SERVER_TO_CLIENT:
-                pass
-            case ConnectionType.CLIENT_TO_SERVER:
-                pass
+    if connection.type is ConnectionType.SERVER_TO_CLIENT:
+        __server_to_client(procedures, password)
+    else:
+        __client_to_server(procedures, password)
     
     return procedures
 
