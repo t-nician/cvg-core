@@ -17,10 +17,6 @@ class PacketType(Enum):
     
     PACKET = b"\xf0"
     
-    EVENT_OPEN = b"\xd0"
-    EVENT_CLOSE = b"\xd1"
-    EVENT_EMIT = b"\xd2"
-    
     STREAM_START = b"\xb0"
     STREAM_DATA = b"\xb1"
     STREAM_END = b"\xb2"
