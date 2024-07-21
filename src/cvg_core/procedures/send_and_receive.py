@@ -123,22 +123,23 @@ def receive(
     except Exception as _:
         pass
     
-    if packet and receive_id is not None:
-        assert packet.id == receive_id, ERR_MSG_ID_MISMATCH.format(
-            receive_id, 
-            packet.id
-        )
-
-    # TODO move err msg
-    if packet and receive_type:
-        assert packet.type is receive_type, f"expected {receive_type} got {packet.type}"
-    
     if packet is not None and packet.type is PacketType.STREAM_START:
         packet = stream_receive(
             connection,
             int.from_bytes(packet.payload, "big"),
             packet.id
         )
+    
+    if packet and receive_id is not None:
+        assert packet.id == receive_id, ERR_MSG_ID_MISMATCH.format(
+            receive_id, 
+            packet.id
+        )
+    
+    # TODO move err msg
+    if packet and receive_type:
+        assert packet.type is receive_type, f"expected {receive_type} got {packet.type}"
+    
     
     return packet
 
