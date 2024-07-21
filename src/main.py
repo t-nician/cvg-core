@@ -1,3 +1,5 @@
+#pip install cvg-core
+
 """import sys
 
 from time import sleep
