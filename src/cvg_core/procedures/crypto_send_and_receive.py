@@ -54,8 +54,7 @@ def encrypt_packet(
     
     return PacketObject(
         cipher.nonce + cipher.encrypt(packet.to_bytes()),
-        PacketType.CRYPTO,
-        id=packet.id
+        PacketType.CRYPTO
     )
 
 
@@ -119,9 +118,12 @@ def crypto_receive(
     receive_type: PacketType | None = None,
     id: None | bytes = None
 ) -> PacketObject | None:
-    packet = receive(connection, PacketType.CRYPTO, id)
+    packet = receive(connection, PacketType.CRYPTO)
     
     result = decrypt_packet(connection, packet)
+    
+    if id:
+        assert result.id == id
     
     if receive_type:
         # TODO move err msg, do not remove this. This assert is required.

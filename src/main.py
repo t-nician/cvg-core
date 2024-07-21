@@ -24,7 +24,7 @@ def client_test():
         address=("127.0.0.1", 5000),
         socket=socket(AF_INET, SOCK_STREAM),
         type=ConnectionType.CLIENT_TO_SERVER,
-        encryption_enabled=False
+        encryption_enabled=True
     )
     
     connection.socket.connect(connection.address)

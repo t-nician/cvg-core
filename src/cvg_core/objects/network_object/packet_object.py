@@ -45,23 +45,16 @@ class PacketObject:
                 raise Exception("Invalid packet type!")
             
             self.payload = self.payload[2::]
-            self.get_size()
         elif self.id is None:
             self.id = b"\x00"
-            self.get_size()
+
+        self.size = self.get_size()
 
     def to_bytes(self) -> bytes:
-        encoded_packet = self.id + self.type.value + self.payload
-        
-        self.size = len(encoded_packet)
-        
-        return encoded_packet
+        return self.id + self.type.value + self.payload
     
-    def get_size(self) -> int:
-        if self.size == 2:
-            self.to_bytes()
-            
-        return self.size
+    def get_size(self) -> int:    
+        return len(self.to_bytes())
     
     def get_payload_size(self) -> int:
         return self.get_size() - 2
