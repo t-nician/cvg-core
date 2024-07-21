@@ -1,5 +1,3 @@
-import hashlib
-
 from typing import Callable
 
 from Crypto.Cipher import AES
