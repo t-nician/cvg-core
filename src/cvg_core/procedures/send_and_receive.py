@@ -144,6 +144,7 @@ def receive(
 
 
 def send(connection: ConnectionObject, packet: PacketObject):
+    print(connection.type, packet)
     if packet.get_size() > 4096:
         stream_send(connection, packet)
     else:

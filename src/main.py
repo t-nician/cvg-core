@@ -13,7 +13,7 @@ from cvg_core.procedures.establish_connection import establish_connection
 
 from cvg_core.procedures.command_send_and_receive import command_send_and_receive, command_receive_and_send
 
-ENCRYPTION_ENABLED = True
+ENCRYPTION_ENABLED = False
 
 big_password = b"500 cigarettes"
 
@@ -24,7 +24,7 @@ def client_test():
         address=("127.0.0.1", 5000),
         socket=socket(AF_INET, SOCK_STREAM),
         type=ConnectionType.CLIENT_TO_SERVER,
-        encryption_enabled=ENCRYPTION_ENABLED
+        encryption_enabled=False
     )
     
     connection.socket.connect(connection.address)
@@ -45,7 +45,7 @@ def server_test():
     connection = ConnectionObject(
         *server_socket.accept(), 
         type=ConnectionType.SERVER_TO_CLIENT,
-        encryption_enabled=ENCRYPTION_ENABLED
+        encryption_enabled=True
     ) 
     
     establish_connection(connection, big_password)

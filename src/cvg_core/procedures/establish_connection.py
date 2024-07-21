@@ -57,8 +57,8 @@ def establish_connection(
     connection: ConnectionObject, 
     password: bytes | None = None
 ):  
-    if connection.encryption_enabled:
-        crypto_exchange(connection)
+    #f connection.encryption_enabled:
+    crypto_exchange(connection)
     
     procedures = SendReceiveProcedures(connection)
       

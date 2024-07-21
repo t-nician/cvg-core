@@ -61,38 +61,53 @@ def encrypt_packet(
 
 def crypto_exchange(connection: ConnectionObject):
     if connection.type is ConnectionType.SERVER_TO_CLIENT:
-        client_pem = send_and_receive(
-            connection,
-            PacketObject(
-                __to_public_pem(connection),
+        if connection.encryption_enabled:
+            client_pem = send_and_receive(
+                connection,
+                PacketObject(
+                    __to_public_pem(connection),
+                    PacketType.EXCHANGE
+                ),
                 PacketType.EXCHANGE
-            ),
-            PacketType.EXCHANGE
-        )
+            )
         
-        connection.client_crypto = ECDHObject(client_pem.payload)
-        
-        # TODO confirm crypto exchange. we just assume it's a success rn.
-        crypto_send(connection, PacketObject(b"Hello", PacketType.EXCHANGE))
+            connection.client_crypto = ECDHObject(client_pem.payload)
+            
+            # TODO confirm crypto exchange. we just assume it's a success rn.
+            crypto_send(
+                connection, 
+                PacketObject(b"Hello", PacketType.EXCHANGE, client_pem.id)
+            )
+        else:
+            send(
+                connection,
+                PacketObject(b"Hello", PacketType.EXCHANGE)
+            )
+            
+            connection.encryption_enabled = False
         
     else:
-        server_pem = receive(connection, PacketType.EXCHANGE)
+        server_exchange = receive(connection, PacketType.EXCHANGE)
         
-        connection.server_crypto = ECDHObject(server_pem.payload)
-        
-        send(
-            connection,
-            PacketObject(
-                __to_public_pem(connection), 
-                PacketType.EXCHANGE,
-                server_pem.id
+        if server_exchange.payload.startswith(b"-----BEGIN PUBLIC KEY-----"):
+            connection.client_crypto = ECDHObject()
+            connection.server_crypto = ECDHObject(server_exchange.payload)
+            
+            send(
+                connection,
+                PacketObject(
+                    __to_public_pem(connection), 
+                    PacketType.EXCHANGE,
+                    server_exchange.id
+                )
             )
-        )
-        
-        # TODO confirm crypto exchange. we just assume it's a success rn.
-        crypto_receive(connection, PacketType.EXCHANGE)
-        
-        connection.encryption_enabled = True
+            
+            # TODO confirm crypto exchange. we just assume it's a success rn.
+            crypto_receive(connection, PacketType.EXCHANGE, server_exchange.id)
+            
+            connection.encryption_enabled = True
+        elif server_exchange.payload == b"Hello":
+            connection.encryption_enabled = False
         
 
 def crypto_send(connection: ConnectionObject, packet: PacketObject):
