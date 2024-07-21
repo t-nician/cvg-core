@@ -1,4 +1,4 @@
-import sys
+"""import sys
 
 from time import sleep
 from threading import Thread
@@ -78,4 +78,4 @@ def server_example():
 
 Thread(target=server_example).start()
 sleep(1)
-client_example()
+client_example()"""
