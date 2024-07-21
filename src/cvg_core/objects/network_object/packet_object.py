@@ -17,6 +17,9 @@ class PacketType(Enum):
     
     PACKET = b"\xf0"
     
+    SUCCESS = b"\xf0"
+    ERROR = b"\xf1"
+    
     STREAM_START = b"\xb0"
     STREAM_DATA = b"\xb1"
     STREAM_END = b"\xb2"
