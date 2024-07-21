@@ -9,7 +9,7 @@ Main functionality is for wrapping a socket.
     * If the server has encryption enabled but the client doesn't it will- \
 Force the client to enable encryption before continuing the connection.
 
-    * If the server has encryption disabled and the client doesn't it will- \
+    * If the server has encryption disabled and the client does it will- \
 Force the client to disable encryption before continuing the connection \
 <sup> I'm probably not going to leave this as a 'feature' for obvious reasons </sup>
 
