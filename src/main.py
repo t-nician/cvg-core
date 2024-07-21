@@ -1,14 +1,18 @@
-#pip install cvg-core
-
-
 import sys
 
+import cvg_core
+
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == "test":
+        cvg_core.tests.start_tests()
+
+"""
 from time import sleep
 from threading import Thread
 
 from socket import socket, AF_INET, SOCK_STREAM
 
-from cvg_core import PacketType, ConnectionType, PacketObject, ConnectionObject, establish_connection
 
 password = b"bytes"
 
@@ -88,3 +92,4 @@ def server_example():
 Thread(target=server_example).start()
 sleep(1)
 client_example()
+"""

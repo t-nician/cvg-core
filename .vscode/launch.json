@@ -5,18 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: main.py",
+            "name": "main.py",
             "type": "debugpy",
             "request": "launch",
             "program": "./src/main.py",
             "console": "integratedTerminal"
         },
         {
-            "name": "Run unittests",
+            "name": "unittest",
             "type": "debugpy",
             "request": "launch",
-            "program": "-m",
-            "args": ["unittest"]
-        }
+            "program": "./src/main.py",
+            "args": ["test"],
+            "console": "integratedTerminal"
+        },
     ]
 }
