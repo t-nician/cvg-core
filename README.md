@@ -14,7 +14,7 @@ Force the client to disable encryption before continuing the connection \
 <sup> I'm probably not going to leave this as a 'feature' for obvious reasons </sup>
 
 ---
-* [You can give the server a key before a client has access/authorization.](https://github.com/t-nician/cvg-core/blob/main/src/cvg_core/procedures/establish_connection.py#L40) \
+* [You can add a password/key to the server the client requires to get authorized.](https://github.com/t-nician/cvg-core/blob/main/src/cvg_core/procedures/establish_connection.py#L40) \
 <sup> NOTE: If the server has encryption enabled, it will only do key exchange after encryption has been established </sup>
 
 
