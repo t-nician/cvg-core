@@ -61,14 +61,13 @@ class SendReceiveProcedures:
         self,
         send_payload: bytes,
         send_type: PacketType,
-        send_id: bytes | None = None,
         
         receive_type: PacketType | None = None,
         receive_id: bytes | None = None
     ) -> PacketObject:
         return self.__receive_and_send(
             self.connection,
-            PacketObject(send_payload, send_type, send_id),
+            PacketObject(send_payload, send_type, receive_id),
             receive_type,
             receive_id
         )

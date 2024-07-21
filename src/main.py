@@ -7,7 +7,7 @@ from threading import Thread
 
 from socket import socket, AF_INET, SOCK_STREAM
 
-from cvg_core import SendReceiveProcedures, PacketType, ConnectionType, PacketObject, ConnectionObject, establish_connection
+from cvg_core import PacketType, ConnectionType, PacketObject, ConnectionObject, establish_connection
 
 password = b"bytes"
 
@@ -24,20 +24,21 @@ def client_example():
     )
 
     client_procedures = establish_connection(client_connection, password)
+    #client_procedures.receive_and_send()
 
     # At this point it's up to on what you want to do.
     command_result_a = client_procedures.send_and_receive(
-        b"hello", 
-        PacketType.COMMAND,
-        b"\x03",
-        PacketType.RESPONSE
+        send_payload=b"hello", 
+        send_type=PacketType.COMMAND,
+        send_id=b"\x03",
+        receive_type=PacketType.RESPONSE
     )
 
     command_result_b = client_procedures.send_and_receive(
-        b"hello", 
-        PacketType.COMMAND, 
-        b"\x03",
-        PacketType.RESPONSE
+        send_payload=b"hello", 
+        send_type=PacketType.COMMAND,
+        send_id=b"\x03",
+        receive_type=PacketType.RESPONSE
     )
 
     sleep(0.1) # sometimes the prints stack on each other.
@@ -63,17 +64,18 @@ def server_example():
     # At this point it's up to on what you want to do.
 
     # Function wrapping on receive.
+    # ..._into_and_... always requires a PacketObject return inside the function.
     @client_procedures.receive_into_and_send(PacketType.COMMAND)
     def command(packet: PacketObject):
-        print("[server] client command received", packet)
-        
+        print("[server] command received", packet)
         if packet.payload.startswith(b"hello"):
             return PacketObject(b"world_a", PacketType.RESPONSE, packet.id)
 
+
     # Or send a premade packet upon receive.
     command_packet = client_procedures.receive_and_send(
-        b"world_b", 
-        PacketType.RESPONSE,
+        send_payload=b"world_b", 
+        send_type=PacketType.RESPONSE,
         receive_type=PacketType.COMMAND
     )
     

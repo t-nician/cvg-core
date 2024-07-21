@@ -27,16 +27,10 @@ from threading import Thread
 
 from socket import socket, AF_INET, SOCK_STREAM
 
-from cvg_core.proper_procedures import SendReceiveProcedures
-from cvg_core.procedures.establish_connection import establish_connection
+from cvg_core import PacketType, ConnectionType, PacketObject, ConnectionObject, establish_connection
 
-from cvg_core.objects.network_object.packet_object import PacketType, PacketObject
-from cvg_core.objects.network_object.connection_object import ConnectionType, ConnectionObject
+password = b"bytes"
 
-# [Shared]
-password = None # or b"bytes"
-
-# [Client Implementation]
 def client_example():
     client_connection = ConnectionObject(
         address=("127.0.0.1", 5000),
@@ -49,19 +43,22 @@ def client_example():
         client_connection.address
     )
 
-    establish_connection(client_connection, password)
-
-    client_procedures = SendReceiveProcedures(client_connection)
+    client_procedures = establish_connection(client_connection, password)
+    #client_procedures.receive_and_send()
 
     # At this point it's up to on what you want to do.
     command_result_a = client_procedures.send_and_receive(
-        PacketObject(b"hello", PacketType.COMMAND, id=b"\x03"),
-        PacketType.RESPONSE
+        send_payload=b"hello", 
+        send_type=PacketType.COMMAND,
+        send_id=b"\x03",
+        receive_type=PacketType.RESPONSE
     )
 
     command_result_b = client_procedures.send_and_receive(
-        PacketObject(b"hello", PacketType.COMMAND, id=b"\x03"),
-        PacketType.RESPONSE
+        send_payload=b"hello", 
+        send_type=PacketType.COMMAND,
+        send_id=b"\x03",
+        receive_type=PacketType.RESPONSE
     )
 
     sleep(0.1) # sometimes the prints stack on each other.
@@ -82,28 +79,27 @@ def server_example():
         encryption_enabled=True
     ) 
         
-    establish_connection(client_connection, password)
-
-    client_procedures = SendReceiveProcedures(client_connection)
+    client_procedures = establish_connection(client_connection, password)
 
     # At this point it's up to on what you want to do.
 
     # Function wrapping on receive.
+    # ..._into_and_... always requires a PacketObject return inside the function.
     @client_procedures.receive_into_and_send(PacketType.COMMAND)
     def command(packet: PacketObject):
-        print("[server] client command received", packet)
-        
+        print("[server] command received", packet)
         if packet.payload.startswith(b"hello"):
             return PacketObject(b"world_a", PacketType.RESPONSE, packet.id)
 
+
     # Or send a premade packet upon receive.
     command_packet = client_procedures.receive_and_send(
-        PacketObject(b"world_b", PacketType.RESPONSE),
-        PacketType.COMMAND
+        send_payload=b"world_b", 
+        send_type=PacketType.RESPONSE,
+        receive_type=PacketType.COMMAND
     )
     
     print("[server] client command received", command_packet)
-
 
 Thread(target=server_example).start()
 sleep(1)

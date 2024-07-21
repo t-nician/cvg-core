@@ -57,15 +57,15 @@ class PacketObject:
         return len(self.to_bytes())
     
     def get_payload_size(self) -> int:
-        return self.get_size() - 2
+        return len(self.payload)
 
     def set_payload(self, data: bytes):
         self.payload = data
-        self.to_bytes()
+        self.size = self.get_size()
     
     def add_payload(self, data: bytes):
         self.payload += data
-        self.to_bytes()
+        self.size = self.get_size()
         
     def clear_payload(self):
         self.payload = b""

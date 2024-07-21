@@ -4,6 +4,7 @@ from cvg_core.objects.network_object.connection_object import ConnectionType, Co
 from cvg_core.proper_procedures import SendReceiveProcedures
 from cvg_core.procedures.crypto_send_and_receive import crypto_exchange
 
+
 def __compare_password(password_packet: PacketObject, password: bytes):
     if password_packet.payload == password:
         return PacketObject(b"", PacketType.GRANTED)    
@@ -54,9 +55,11 @@ def __client_to_server(
             
     elif access_check.type is PacketType.GRANTED:
         procedures.connection.established = True
+    elif access_check.type is PacketType.DENIED:
+        procedures.connection.established = False
     else:
         procedures.connection.established = False
-        # whut?
+        # TODO err or something, not normal.
 
 
 def establish_connection(
@@ -71,5 +74,7 @@ def establish_connection(
         __server_to_client(procedures, password)
     else:
         __client_to_server(procedures, password)
+    
+    assert procedures.connection.established
     
     return procedures
