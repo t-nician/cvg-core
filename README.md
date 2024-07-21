@@ -46,24 +46,24 @@ def client_example():
     client_procedures = establish_connection(client_connection, password)
 
     # At this point it's up to on what you want to do.
-    command_result_a = client_procedures.send_and_receive(
+    packet_result_a = client_procedures.send_and_receive(
         send_payload=b"hello", 
-        send_type=PacketType.COMMAND,
+        send_type=PacketType.PACKET,
         send_id=b"\x03",
-        receive_type=PacketType.RESPONSE
+        receive_type=PacketType.PACKET
     )
 
-    command_result_b = client_procedures.send_and_receive(
+    packet_result_b = client_procedures.send_and_receive(
         send_payload=b"hello", 
-        send_type=PacketType.COMMAND,
+        send_type=PacketType.PACKET,
         send_id=b"\x03",
-        receive_type=PacketType.RESPONSE
+        receive_type=PacketType.PACKET
     )
 
     sleep(0.1) # sometimes the prints stack on each other.
 
-    print("[client] command result a:", command_result_a)
-    print("[client] command result b:", command_result_b)
+    print("[client] packet result a:", packet_result_a)
+    print("[client] packet result b:", packet_result_b)
 
 
 # [Server Implementation]
@@ -84,21 +84,25 @@ def server_example():
 
     # Function wrapping on receive.
     # ..._into_and_... always requires a PacketObject return inside the function.
-    @client_procedures.receive_into_and_send(PacketType.COMMAND)
-    def command(packet: PacketObject):
-        print("[server] command received", packet)
-        if packet.payload.startswith(b"hello"):
-            return PacketObject(b"world_a", PacketType.RESPONSE, packet.id)
-
+    @client_procedures.receive_into_and_send(PacketType.PACKET)
+    def packet(received_packet: PacketObject):
+        print("[server] command received", received_packet)
+        if received_packet.payload.startswith(b"hello"):
+            return PacketObject(
+                b"world_a", 
+                PacketType.PACKET, 
+                received_packet.id
+            )
 
     # Or send a premade packet upon receive.
-    command_packet = client_procedures.receive_and_send(
+    received_packet = client_procedures.receive_and_send(
         send_payload=b"world_b", 
-        send_type=PacketType.RESPONSE,
-        receive_type=PacketType.COMMAND
+        send_type=PacketType.PACKET,
+        receive_type=PacketType.PACKET
     )
     
-    print("[server] client command received", command_packet)
+    print("[server] client packet received", received_packet)
+
 
 Thread(target=server_example).start()
 sleep(1)

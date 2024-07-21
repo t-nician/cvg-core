@@ -17,15 +17,13 @@ def stream_receive(
     compiled_payload = b""
     stream_packet = PacketObject(b"", PacketType.STREAM_DATA, id)
     
-    packet = send_and_receive(
+    # TODO packet can return None handle interrupt
+    
+    compiled_payload += send_and_receive(
         connection, 
         stream_packet,
         PacketType.STREAM_DATA
-    )
-    
-    # TODO packet can return None handle interrupt
-    
-    compiled_payload += packet.payload
+    ).payload
     
     while True:
         packet = send_and_receive(connection, stream_packet)
@@ -51,6 +49,7 @@ def stream_receive(
         PacketObject(checksum, PacketType.STREAM_END)
     )
     
+    # TODO move err msg
     assert checksum == received_checksum, "Receive stream checksum failed!"
     
     return PacketObject(compiled_payload)

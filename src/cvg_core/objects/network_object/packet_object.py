@@ -6,8 +6,8 @@ class PacketType(Enum):
     UNKNOWN = b"\xff"
     
     GATEWAY = b"\x00"
-    EXCHANGE = b"\x01"
     
+    EXCHANGE = b"\x01"
     CRYPTO = b"\xe0"
     
     PASSWORD = b"\x02"
@@ -15,8 +15,11 @@ class PacketType(Enum):
     GRANTED = b"\xa0"
     DENIED = b"\xa1"
     
-    COMMAND = b"\xc0"
-    RESPONSE = b"\xc1"
+    PACKET = b"\xf0"
+    
+    EVENT_OPEN = b"\xd0"
+    EVENT_CLOSE = b"\xd1"
+    EVENT_EMIT = b"\xd2"
     
     STREAM_START = b"\xb0"
     STREAM_DATA = b"\xb1"
