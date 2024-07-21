@@ -11,5 +11,13 @@
             "program": "./src/main.py",
             "console": "integratedTerminal"
         },
+        {
+            "name": "tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "./src/main.py",
+            "args": ["test"],
+            "console": "integratedTerminal"
+        },
     ]
 }
