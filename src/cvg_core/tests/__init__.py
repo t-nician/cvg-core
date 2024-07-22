@@ -1,7 +1,5 @@
 from time import sleep
 
-from cvg_core.tests import tool
-
 from cvg_core.tests import test_send, test_receive, test_send_and_receive, test_stream, test_login, test_establish
 from cvg_core.tests import test_crypto_send, test_crypto_receive, test_crypto_send_and_receive, test_crypto_stream, test_crypto_login, test_crypto_establish
 
@@ -16,23 +14,30 @@ CRYPTO_TESTS = [
     test_crypto_stream, test_crypto_login, test_crypto_establish
 ]
 
+SPLIT_LINE = ("-" * 60) + ""
 
 def __generic_start(
     module, 
     skip_modules_missing_start_tests: bool | None = False
 ):
+    module_str = str(module).removeprefix("<module '").split("'").pop(0).removesuffix("'")
+    
     if not skip_modules_missing_start_tests:
-        assert hasattr(module, "start_tests"), f"target {module} does not have 'start_tests' function."
+        assert hasattr(module, "start_tests"), f"target {module_str} does not have 'start_tests' function."
     elif not hasattr(module, "start_tests"):
-        print(module, "does not have 'start_tests' function! skipping is enabled, fix this later!")
+        print(f"[???????] {module_str} missing 'start_tests' skipping... fix this later!")
     else:
-        module.start_tests()
+        result = module.start_tests()
+        
+        print(
+            f"{SPLIT_LINE}\n[TESTING] {module_str}\n[RESULT] {result}\n{SPLIT_LINE}"
+        )
 
 
 def start_non_crypto_tests(
     skip_modules_missing_start_tests: bool | None = False
 ):
-    print("starting non crypto tests...")
+    print("[RUNNING NON-CRYPTO TESTS]")
     
     sleep(1)
     
@@ -41,7 +46,7 @@ def start_non_crypto_tests(
 
 
 def start_crypto_tests(skip_modules_missing_start_tests: bool | None = False):
-    print("starting crypto tests...")
+    print("[RUNNING CRYPTO TESTS]")
     
     sleep(1)
     
@@ -50,9 +55,14 @@ def start_crypto_tests(skip_modules_missing_start_tests: bool | None = False):
 
 
 def start_tests(skip_modules_missing_start_tests: bool | None = False):
-    print("starting tests...")
+    print("[INITIALIZING TESTS]")
     
     start_non_crypto_tests(skip_modules_missing_start_tests)
+    
+    print(SPLIT_LINE)
+    
     start_crypto_tests(skip_modules_missing_start_tests)
+    
+    print(SPLIT_LINE)
     
     
