@@ -1,0 +1,26 @@
+[INITIALIZING TESTS]
+[RUNNING NON-CRYPTO TESTS]
+------------------------------------------------------------
+[TESTING] cvg_core.tests.test_send
+------------------------------
+running test_server()...
+running test_client()...
+------------------------------
+------------------------------
+[FINISHED] cvg_core.tests.test_send
+[RESULT] success!
+------------------------------------------------------------
+[???????] cvg_core.tests.test_receive missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_stream missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_send_and_receive missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_login missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_establish missing 'start_tests' skipping... fix this later!
+------------------------------------------------------------
+[RUNNING CRYPTO TESTS]
+[???????] cvg_core.tests.test_crypto_send missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_crypto_receive missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_crypto_send_and_receive missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_crypto_stream missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_crypto_login missing 'start_tests' skipping... fix this later!
+[???????] cvg_core.tests.test_crypto_establish missing 'start_tests' skipping... fix this later!
+------------------------------------------------------------

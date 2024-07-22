@@ -3,6 +3,9 @@ from time import sleep
 from cvg_core.tests import test_send, test_receive, test_send_and_receive, test_stream, test_login, test_establish
 from cvg_core.tests import test_crypto_send, test_crypto_receive, test_crypto_send_and_receive, test_crypto_stream, test_crypto_login, test_crypto_establish
 
+from cvg_core.tests.shortcut import print_and_save
+
+print = print_and_save
 
 NON_CRYPTO_TESTS = [
     test_send, test_receive, test_stream, test_send_and_receive, test_login, 
@@ -14,7 +17,8 @@ CRYPTO_TESTS = [
     test_crypto_stream, test_crypto_login, test_crypto_establish
 ]
 
-SPLIT_LINE = ("-" * 60) + ""
+SPLIT_LINE = "-" * 60
+SHORT_LINE = "-" * 30
 
 def __generic_start(
     module, 
@@ -27,10 +31,14 @@ def __generic_start(
     elif not hasattr(module, "start_tests"):
         print(f"[???????] {module_str} missing 'start_tests' skipping... fix this later!")
     else:
+        print(
+            f"{SPLIT_LINE}\n[TESTING] {module_str}\n{SHORT_LINE}"
+        )
+        
         result = module.start_tests()
         
         print(
-            f"{SPLIT_LINE}\n[TESTING] {module_str}\n[RESULT] {result}\n{SPLIT_LINE}"
+            f"{SHORT_LINE}\n[FINISHED] {module_str}\n[RESULT] {result}\n{SPLIT_LINE}"
         )
 
 
