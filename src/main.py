@@ -5,8 +5,8 @@ import cvg_core
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "test":
-        cvg_core.tests.start_tests()
-
+        cvg_core.tests.start_tests(True)
+ 
 """
 from time import sleep
 from threading import Thread
@@ -19,7 +19,6 @@ password = b"bytes"
 def client_example():
     client_connection = ConnectionObject(
         address=("127.0.0.1", 5000),
-        socket=socket(AF_INET, SOCK_STREAM),
         type=ConnectionType.CLIENT_TO_SERVER,
         encryption_enabled=True
     )
